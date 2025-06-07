@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DigitalItemTest {
+class DigitalItemUnitTest {
 
     private DigitalItem digitalItem;
 
@@ -15,7 +15,7 @@ class DigitalItemTest {
     }
 
     @Test
-    public void shouldStatusBeAvailable() {
+    public void whenDigitalItemIsCreated_shouldStatusBeAvailable() {
         assertEquals(DigitalItemStatus.AVAILABLE, digitalItem.getStatus());
     }
 }

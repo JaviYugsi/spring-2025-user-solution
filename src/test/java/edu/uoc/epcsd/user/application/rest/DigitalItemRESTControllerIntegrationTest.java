@@ -46,37 +46,38 @@ class DigitalItemRESTControllerIntegrationTest {
         sessionRepository.deleteAll();
         userRepository.deleteAll();
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setFullName("Test User");
-        userEntity.setEmail("test@test.com");
-        userEntity.setPassword("password");
-        userEntity.setPhoneNumber("1234567890");
+        UserEntity userEntity = UserEntity.builder()
+                .fullName("Test User")
+                .email("test@test.com")
+                .password("password")
+                .phoneNumber("1234567890")
+                .build();
         userRepository.save(userEntity);
 
-        DigitalSessionEntity session = new DigitalSessionEntity();
-        session.setDescription("Test Session");
-        session.setLocation("Barcelona");
-        session.setLink("http://test.session");
-        session.setUser(userEntity);
+        DigitalSessionEntity session = DigitalSessionEntity.builder()
+                .description("Sesión de prueba")
+                .link("https://link.com")
+                .location("Barcelona")
+                .user(userEntity)
+                .build();
         session = sessionRepository.save(session);
         sessionId = session.getId();
 
-        DigitalItemEntity item = new DigitalItemEntity();
-        item.setDescription("Item 1");
-        item.setLat(41L);
-        item.setLon(2L);
-        item.setLink("http://link.item");
-        item.setStatus(DigitalItemStatus.AVAILABLE);
-        item.setDigitalSession(session);
+        DigitalItemEntity item = DigitalItemEntity.builder()
+                .description("Item 1")
+                .lat(41L)
+                .lon(2L)
+                .link("http://link.item")
+                .status(DigitalItemStatus.AVAILABLE)
+                .digitalSession(session)
+                .build();
         itemRepository.save(item);
     }
 
     @Test
-    void shouldReturnDigitalItemsBySessionId() {
-        // Arrange
+    void whenCallingFindDigitalItemBySession_shouldReturnListWihObjectsWithProperSessionId() {
         String url = "http://localhost:" + port + "/digitalItem/digitalItemBySession?digitalSessionId=" + sessionId;
 
-        // Act
         ResponseEntity<List<DigitalItem>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
@@ -84,11 +85,11 @@ class DigitalItemRESTControllerIntegrationTest {
                 new ParameterizedTypeReference<>() {
                 });
 
-        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody()).hasSize(1);
         assertThat(response.getBody().get(0).getDescription()).isEqualTo("Item 1");
+        assertThat(response.getBody().get(0).getDigitalSessionId()).isEqualTo(sessionId);
     }
 
 }
