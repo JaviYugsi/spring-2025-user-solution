@@ -34,12 +34,26 @@ class DigitalSessionServiceUnitTest {
     @Test
     void findDigitalSessionByUser_shouldReturnListOfDigitalSession() {
 
-        when(userRepository.findUserById(anyLong())).thenReturn(Optional.of(new User()));
-        when(digitalSessionRepository.findDigitalSessionByUser(anyLong())).thenReturn(List.of(new DigitalSession()));
-        List<DigitalSession> digitalSessionByUserResult = sut.findDigitalSessionByUser(anyLong());
+        User user = User.builder()
+                .id(1L)
+                .fullName("Test User")
+                .email("test@test.com")
+                .password("password")
+                .phoneNumber("1234567890").build();
+
+        DigitalSession digitalSession = DigitalSession.builder() .description("Sesión de prueba")
+                .link("https://link.com")
+                .location("Barcelona")
+                .userId(user.getId())
+                .build();
+
+        when(userRepository.findUserById(user.getId())).thenReturn(Optional.of(user));
+        when(digitalSessionRepository.findDigitalSessionByUser(anyLong())).thenReturn(List.of(digitalSession));
+        List<DigitalSession> digitalSessionByUserResult = sut.findDigitalSessionByUser(user.getId());
 
         assertNotNull(digitalSessionByUserResult);
         assertFalse(digitalSessionByUserResult.isEmpty());
+        assertEquals(digitalSession.getId(), digitalSessionByUserResult.get(0).getId());
     }
 
     @Test
